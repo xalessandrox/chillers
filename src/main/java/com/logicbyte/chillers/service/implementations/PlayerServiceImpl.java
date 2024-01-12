@@ -1,0 +1,116 @@
+package com.logicbyte.chillers.service.implementations;
+
+import com.logicbyte.chillers.Utils;
+import com.logicbyte.chillers.enums.Outcome;
+import com.logicbyte.chillers.model.Player;
+import com.logicbyte.chillers.rowmapper.PlayerRowMapper;
+import com.logicbyte.chillers.service.PlayerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static com.logicbyte.chillers.enums.Outcome.DRAW;
+import static com.logicbyte.chillers.query.PlayerQuery.*;
+
+/**
+ * @author Alessandro Formica
+ * @version 1.0
+ * @since 04.12.2023
+ */
+
+
+@RequiredArgsConstructor
+@Service
+public class PlayerServiceImpl implements PlayerService {
+    private final NamedParameterJdbcTemplate jdbc;
+
+
+    @Override
+    public List<Player> getAll() {
+        return jdbc.query(SELECT_ALL_PLAYERS_QUERY, new PlayerRowMapper());
+    }
+
+    @Override
+    public List<Map<String, List<Player>>> getPlayersOfTheGame(Long gameId) {
+        List<Player> team1 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '1'), new PlayerRowMapper());
+        List<Player> team2 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '2'), new PlayerRowMapper());
+
+        Map<String, List<Player>> team1asMap = Map.of("team1", team1);
+        Map<String, List<Player>> team2asMap = Map.of("team2", team2);
+        return Arrays.asList(team1asMap, team2asMap);
+    }
+
+    @Override
+    public Player findPlayerById(Long id) {
+        try {
+            return jdbc.queryForObject("SELECT * FROM players WHERE id = :playerId", Map.of("playerId", id), new PlayerRowMapper());
+        } catch(Exception ex) {
+            System.out.println(ex.getMessage());
+            return new Player();
+        }
+    }
+
+
+    @Override
+    public List<Integer> findPlayersByGameIdAndTeamFromGamesPlayers(int gameId, char winnerTeam) {
+        return null;
+    }
+
+    @Override
+    public Player getMvpPlayerByGameId(Long id) {
+        return jdbc.queryForObject(
+                SELECT_MVP_PLAYER_BY_GAME_ID_QUERY,
+                Map.of("gameId", id),
+                new PlayerRowMapper());
+    }
+
+    @Override
+    public void updatePlayerPointsByGameId(Long id, Outcome outcome) {
+        if(outcome == DRAW) {
+            List<Integer> allPlayers =
+                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID,
+                            Map.of("gameId", id),
+                            Integer.class);
+            for (int playerId : allPlayers) {
+                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
+                        Map.of("playerId", playerId, "points", 25));
+            }
+        } else {
+            int winners = outcome.ordinal();
+            int losers = winners == 0 ? 1 : 0;
+            List<Integer> winningPlayers =
+                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID_AND_TEAM,
+                            Map.of("gameId", id, "team", winners + 1),
+                            Integer.class);
+            for (int playerId : winningPlayers) {
+                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
+                        Map.of("playerId", playerId, "points", 50));
+            }
+
+            List<Integer> losingPlayers =
+                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID_AND_TEAM,
+                            Map.of("gameId", id, "team", losers + 1),
+                            Integer.class);
+            for (int playerId : losingPlayers) {
+                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
+                        Map.of("playerId", playerId, "points", -10));
+            }
+
+        }
+
+
+    }
+
+    private SqlParameterSource getSqlParameterSource(Long gameId, char team) {
+        return new MapSqlParameterSource()
+                .addValue("gameId", gameId)
+                .addValue("team", team);
+    }
+
+}

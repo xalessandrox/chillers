@@ -1,0 +1,42 @@
+### create a game
+POST localhost:8080/games/new
+Content-Type: application/json
+
+{
+  "team1": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    }
+  ],
+  "team2": [
+    {
+      "id": 3
+    },
+    {
+      "id": 4
+    }
+  ],
+  "gameFormat": "FORMAT_2V2"
+}
+
+### save a game
+PATCH http://localhost:8080/games/save
+Content-Type: application/json
+
+{
+  "id": 2,
+  "outcome": "TEAM1_WINS",
+  "mvp": {"id":  4}
+}
+
+### GAMES: get 1
+GET localhost:8080/games/1
+
+### GAMES: get ALL
+GET localhost:8080/games/all
+
+### PLAYERS: get ALL
+GET localhost:8080/player/all

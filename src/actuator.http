@@ -1,0 +1,7 @@
+### health
+GET localhost:8090/brad/health
+
+# M E T R I C S #
+### metrics
+GET localhost:8090/actuator/metrics/jvm.gc.memory.allocated
+
