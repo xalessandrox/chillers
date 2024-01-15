@@ -18,7 +18,7 @@ public class GameRowMapper implements RowMapper<Game> {
     @Override
     public Game mapRow(ResultSet rs, int rowNum) throws SQLException {
         return Game.builder()
-                .id(rs.getLong("id"))
+                .id(rs.getInt("id"))
                 .gameFormat(GameFormat.values()[(rs.getInt("gameFormat"))])
                 .gameState(GameState.values()[(rs.getInt("gameState"))])
                 .createdAt(rs.getTimestamp("created_at").toLocalDateTime())

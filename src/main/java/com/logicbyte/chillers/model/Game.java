@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.logicbyte.chillers.enums.GameFormat;
 import com.logicbyte.chillers.enums.GameState;
 import com.logicbyte.chillers.enums.Outcome;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -29,7 +25,8 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Game {
-    Long id;
+
+    Integer id;
     private List<Player> team1;
     private List<Player> team2;
     private GameFormat gameFormat;
@@ -40,14 +37,11 @@ public class Game {
     private byte numberOfPlayers;
     private Player mvp;
     private int teamWinner;
+
     public Game(GameFormat gameFormat, byte numberOfPlayers) {
         this.team1 = new ArrayList<>(numberOfPlayers);
         this.team2 = new ArrayList<>(numberOfPlayers);
         this.gameFormat = gameFormat;
         this.numberOfPlayers = numberOfPlayers;
-    }
-
-    public void setTeam1(List<Player> team1) {
-        this.team1 = team1;
     }
 }

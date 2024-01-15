@@ -16,10 +16,11 @@ import java.util.Map;
 public interface PlayerService {
 
     List<Player> getAll();
-    List<Map<String, List<Player>>> getPlayersOfTheGame(Long gameId);
-    Player findPlayerById(Long id);
+    List<Map<String, List<Player>>> getPlayersOfTheGame(Integer gameId);
+    Player findPlayerById(Integer id);
     List<Integer> findPlayersByGameIdAndTeamFromGamesPlayers(int gameId, char winnerTeam);
-    Player getMvpPlayerByGameId(Long id);
-    void updatePlayerPointsByGameId(Long id, Outcome outcome);
+    Player getMvpPlayerByGameId(Integer id);
+    void updatePlayersPointsByGameIdAndOutcome(Integer id, Outcome outcome);
+    void updatePlayerPointsByPlayerId(int playerId, int points);
 
 }

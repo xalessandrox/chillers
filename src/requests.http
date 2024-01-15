@@ -27,8 +27,8 @@ PATCH http://localhost:8080/games/save
 Content-Type: application/json
 
 {
-  "id": 2,
-  "outcome": "TEAM1_WINS",
+  "id": 1,
+  "outcome": "TEAM2_WINS",
   "mvp": {"id":  4}
 }
 
@@ -39,4 +39,4 @@ GET localhost:8080/games/1
 GET localhost:8080/games/all
 
 ### PLAYERS: get ALL
-GET localhost:8080/player/all
+GET localhost:8080/players/all

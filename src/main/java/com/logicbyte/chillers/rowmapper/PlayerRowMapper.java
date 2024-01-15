@@ -18,9 +18,10 @@ public class PlayerRowMapper implements RowMapper<Player> {
     @Override
     public Player mapRow(ResultSet rs, int rowNum) throws SQLException {
        return Player.builder()
-               .id(rs.getLong("id"))
+               .id(rs.getInt("id"))
                .nickname(rs.getString("nickname"))
                .image_url(rs.getString("image_url"))
+               .playerPoints(rs.getInt("player_points"))
                .build();
     }
 }

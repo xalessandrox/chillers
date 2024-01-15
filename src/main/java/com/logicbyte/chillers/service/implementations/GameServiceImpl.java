@@ -5,7 +5,6 @@ import com.logicbyte.chillers.enums.Outcome;
 import com.logicbyte.chillers.model.Game;
 import com.logicbyte.chillers.model.Player;
 import com.logicbyte.chillers.rowmapper.GameRowMapper;
-import com.logicbyte.chillers.rowmapper.PlayerRowMapper;
 import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +16,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
+import static com.logicbyte.chillers.enums.Outcome.DRAW;
 import static com.logicbyte.chillers.enums.Outcome.SCRAP;
 import static com.logicbyte.chillers.query.GameQuery.*;
-import static com.logicbyte.chillers.query.PlayerQuery.*;
 
 /**
  * @author Alessandro Formica
@@ -44,10 +42,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game createGame(Game game) {
         try {
-            KeyHolder holder = new GeneratedKeyHolder();
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource parameterSource = getSqlParameterSourceForGame(game);
-            jdbc.update(INSERT_GAME_QUERY, parameterSource, holder);
-            game.setId((Long) Objects.requireNonNull(holder.getKeys()).get("id"));
+            jdbc.update(INSERT_GAME_QUERY, parameterSource, keyHolder);
+//            game.setId(Integer.valueOf(String.valueOf(keyHolder.getKeys().get("id"))));
+            game.setId(Integer.parseInt(keyHolder.getKeys().get("id").toString()));
             game.setGameState(STARTED);
             setGameAndPlayers(game.getTeam1(), game.getTeam2(), game.getId());
         } catch (Exception ex) {
@@ -60,13 +59,19 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game saveGame(Game game) {
         game.setGameState(FINISHED);
+        // Update game
+        // TODO: solve mvp = 0 causing Exception
         jdbc.update(SAVE_GAME_QUERY, Map.of(
                 "gameId", game.getId(),
                 "gameState", FINISHED.ordinal(),
                 "outcome", game.getOutcome().ordinal(),
-                "mvp", game.getMvp().getId()));
-        if(game.getOutcome() != SCRAP) {
-            playerService.updatePlayerPointsByGameId(game.getId(), game.getOutcome());
+                "mvp", game.getMvp() != null ? game.getMvp().getId() : 0));
+        if (game.getOutcome() != SCRAP) {
+            playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), game.getOutcome());
+            if (game.getOutcome() != DRAW) {
+                playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
+                game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
+            }
         }
         return game;
     }
@@ -77,7 +82,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Game getGame(Long id) {
+    public Game getGame(Integer id) {
         try {
             Game game = jdbc.queryForObject(
                     SELECT_GAME_BY_ID_QUERY,
@@ -92,19 +97,24 @@ public class GameServiceImpl implements GameService {
             log.error(ex.getMessage());
             throw new RuntimeException("An error occurred. Please try again.");
         }
-
     }
 
-    private void setGameAndPlayers(List<Player> team1, List<Player> team2, Long gameId) {
+    private void setGameAndPlayers(List<Player> team1, List<Player> team2, Integer gameId) {
         try {
             KeyHolder holder = new GeneratedKeyHolder();
+            int index = 0;
             for (Player player : team1) {
                 SqlParameterSource parameterSource = getSqlParameterSourceForGamesPlayers(gameId, player.getId(), '1');
                 jdbc.update(INSERT_INTO_GAMES_PLAYERS, parameterSource, holder);
+                Player p = playerService.findPlayerById(player.getId());
+                team1.set(index++, p);
             }
+            index = 0;
             for (Player player : team2) {
                 SqlParameterSource parameterSource = getSqlParameterSourceForGamesPlayers(gameId, player.getId(), '2');
                 jdbc.update(INSERT_INTO_GAMES_PLAYERS, parameterSource, holder);
+                Player p = playerService.findPlayerById(player.getId());
+                team2.set(index++, p);
             }
 
         } catch (Exception exception) {
@@ -114,7 +124,7 @@ public class GameServiceImpl implements GameService {
 
     }
 
-    private SqlParameterSource getSqlParameterSourceForGamesPlayers(Long gameId, Long playerId, char team) {
+    private SqlParameterSource getSqlParameterSourceForGamesPlayers(Integer gameId, Integer playerId, char team) {
         return new MapSqlParameterSource()
                 .addValue("gameId", gameId)
                 .addValue("playerId", playerId)
@@ -129,7 +139,7 @@ public class GameServiceImpl implements GameService {
 
     }
 
-    private Outcome getOutcomeByGameId(Long id) {
+    private Outcome getOutcomeByGameId(Integer id) {
         Integer outcomeAsKey = jdbc.queryForObject(
                 "SELECT outcome FROM games WHERE id = :gameId",
                 Map.of("gameId", id), Integer.class);

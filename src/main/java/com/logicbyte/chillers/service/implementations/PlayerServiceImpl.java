@@ -37,7 +37,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<Map<String, List<Player>>> getPlayersOfTheGame(Long gameId) {
+    public List<Map<String, List<Player>>> getPlayersOfTheGame(Integer gameId) {
         List<Player> team1 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '1'), new PlayerRowMapper());
         List<Player> team2 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '2'), new PlayerRowMapper());
 
@@ -47,7 +47,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player findPlayerById(Long id) {
+    public Player findPlayerById(Integer id) {
         try {
             return jdbc.queryForObject("SELECT * FROM players WHERE id = :playerId", Map.of("playerId", id), new PlayerRowMapper());
         } catch(Exception ex) {
@@ -63,7 +63,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Player getMvpPlayerByGameId(Long id) {
+    public Player getMvpPlayerByGameId(Integer id) {
         return jdbc.queryForObject(
                 SELECT_MVP_PLAYER_BY_GAME_ID_QUERY,
                 Map.of("gameId", id),
@@ -71,43 +71,41 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void updatePlayerPointsByGameId(Long id, Outcome outcome) {
+    public void updatePlayersPointsByGameIdAndOutcome(Integer id, Outcome outcome) {
         if(outcome == DRAW) {
-            List<Integer> allPlayers =
-                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID,
-                            Map.of("gameId", id),
-                            Integer.class);
-            for (int playerId : allPlayers) {
-                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
-                        Map.of("playerId", playerId, "points", 25));
-            }
+            List<Integer> allPlayers = getPlayersFkById(id);
+            allPlayers.forEach((playerId) -> {
+                updatePlayerPointsByPlayerId(playerId, 25);
+            });
         } else {
             int winners = outcome.ordinal();
             int losers = winners == 0 ? 1 : 0;
-            List<Integer> winningPlayers =
-                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID_AND_TEAM,
-                            Map.of("gameId", id, "team", winners + 1),
-                            Integer.class);
-            for (int playerId : winningPlayers) {
-                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
-                        Map.of("playerId", playerId, "points", 50));
-            }
+            List<Integer> winningPlayers = getPlayersFkByIdByTeam(id, winners + 1);
+            List<Integer> losingPlayers =  getPlayersFkByIdByTeam(id, losers + 1);
 
-            List<Integer> losingPlayers =
-                    jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID_AND_TEAM,
-                            Map.of("gameId", id, "team", losers + 1),
-                            Integer.class);
-            for (int playerId : losingPlayers) {
-                jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY,
-                        Map.of("playerId", playerId, "points", -10));
-            }
-
+            winningPlayers.forEach((playerId) -> {
+                updatePlayerPointsByPlayerId(playerId, 50);
+            });
+            losingPlayers.forEach((playerId) -> {
+                updatePlayerPointsByPlayerId(playerId, -15);
+            });
         }
-
-
     }
 
-    private SqlParameterSource getSqlParameterSource(Long gameId, char team) {
+    @Override
+    public void updatePlayerPointsByPlayerId(int playerId, int points) {
+        jdbc.update(UPDATE_PLAYER_POINTS_BY_ID_QUERY, Map.of("playerId", playerId, "points", points));
+    }
+
+    List<Integer> getPlayersFkByIdByTeam(Integer id, int team) {
+        return jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID_AND_TEAM, Map.of("gameId", id, "team", team), Integer.class);
+    }
+
+    List<Integer> getPlayersFkById(Integer id) {
+        return jdbc.queryForList(SELECT_PLAYERS_FK_BY_GAME_ID, Map.of("gameId", id), Integer.class);
+    }
+
+    private SqlParameterSource getSqlParameterSource(Integer gameId, char team) {
         return new MapSqlParameterSource()
                 .addValue("gameId", gameId)
                 .addValue("team", team);

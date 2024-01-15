@@ -6,7 +6,6 @@ import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,7 @@ public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
 
-    public GameController(@Qualifier("GameServiceImpl") GameService gameService, PlayerService playerService) {
+    public GameController(GameService gameService, PlayerService playerService) {
         this.gameService = gameService;
         this.playerService = playerService;
     }
@@ -82,7 +81,7 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HttpResponse> getGame(@PathVariable Long id) {
+    public ResponseEntity<HttpResponse> getGame(@PathVariable Integer id) {
         return ResponseEntity
                 .ok()
                 .body(
@@ -97,6 +96,5 @@ public class GameController {
                                 .statusCode(HttpStatus.OK.value())
                                 .build());
     }
-
 
 }

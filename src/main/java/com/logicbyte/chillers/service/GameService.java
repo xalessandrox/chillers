@@ -14,7 +14,7 @@ import java.util.List;
 public interface GameService {
     Game createGame(Game game);
     Game saveGame(Game game);
-    Game getGame(Long id);
+    Game getGame(Integer id);
     List<Game> getGames();
 
 }
