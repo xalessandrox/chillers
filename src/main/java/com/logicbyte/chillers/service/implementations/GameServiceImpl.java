@@ -16,9 +16,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
@@ -61,14 +62,19 @@ public class GameServiceImpl implements GameService {
         game.setGameState(FINISHED);
         // Update game
         // TODO: solve mvp = 0 causing Exception
+        game.setFinishedAt(LocalDateTime.now(Clock.systemDefaultZone()));
         jdbc.update(SAVE_GAME_QUERY, Map.of(
                 "gameId", game.getId(),
                 "gameState", FINISHED.ordinal(),
                 "outcome", game.getOutcome().ordinal(),
-                "mvp", game.getMvp() != null ? game.getMvp().getId() : 0));
-        if (game.getOutcome() != SCRAP) {
-            playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), game.getOutcome());
+                "mvp", game.getMvp() != null ? game.getMvp().getId() : 0,
+                "finishedAt", LocalDateTime.now(Clock.systemDefaultZone()))
+        );
+        Outcome outcome = game.getOutcome();
+        if (outcome != SCRAP) {
+            playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), outcome);
             if (game.getOutcome() != DRAW) {
+                // Here are assigned the points to the MVP \\
                 playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
                 game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
             }
@@ -89,8 +95,9 @@ public class GameServiceImpl implements GameService {
                     Map.of("gameId", id),
                     new GameRowMapper());
             if (game.getGameState() == FINISHED) {
-                game.setMvp(playerService.getMvpPlayerByGameId(id));
                 game.setOutcome(getOutcomeByGameId(id));
+                if (game.getOutcome() != SCRAP)
+                    game.setMvp(playerService.getMvpPlayerByGameId(id));
             }
             return game;
         } catch (Exception ex) {

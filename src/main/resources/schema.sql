@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS games
     finished_at TIMESTAMP DEFAULT NULL,
     gameFormat  CHAR(1), -- 2v2, 3v3 etc
     gameState   CHAR(1), -- started / finished
-    outcome     CHAR(1),
+    outcome     CHAR(1), -- TEAM1_WINS, TEAM2_WINS, DRAW, SCRAP
     mvp         INTEGER DEFAULT NULL,
     FOREIGN KEY (mvp) REFERENCES players (id)
 );

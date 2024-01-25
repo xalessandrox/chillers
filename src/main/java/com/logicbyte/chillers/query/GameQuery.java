@@ -16,7 +16,14 @@ public interface GameQuery {
             "SELECT * FROM games;";
     String SELECT_GAME_BY_ID_QUERY =
             "SELECT * FROM games WHERE id = :gameId";
-    String  SAVE_GAME_QUERY =
-            "UPDATE games SET gameState = :gameState, outcome = :outcome, mvp = :mvp WHERE id = :gameId";
+    String SAVE_GAME_QUERY = """
+            UPDATE games
+            SET
+            gameState = :gameState,
+            outcome = :outcome,
+            mvp = CASE WHEN :mvp <> 0 THEN :mvp END,
+            finished_at = :finishedAt
+            WHERE id = :gameId
+            """;
 
 }
