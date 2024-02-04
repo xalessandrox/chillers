@@ -6,6 +6,7 @@ import com.logicbyte.chillers.model.Player;
 import com.logicbyte.chillers.rowmapper.PlayerRowMapper;
 import com.logicbyte.chillers.service.PlayerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -27,6 +28,7 @@ import static com.logicbyte.chillers.query.PlayerQuery.*;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PlayerServiceImpl implements PlayerService {
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -51,7 +53,7 @@ public class PlayerServiceImpl implements PlayerService {
         try {
             return jdbc.queryForObject("SELECT * FROM players WHERE id = :playerId", Map.of("playerId", id), new PlayerRowMapper());
         } catch(Exception ex) {
-            System.out.println(ex.getMessage());
+            log.error("No player found with this id: {}{}{}", id, System.lineSeparator(), ex.getMessage());
             return new Player();
         }
     }

@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS chillers;
 
-SET CLIENT_ENCODING TO 'UTF8';
+-- SET CLIENT_ENCODING TO 'UTF8';
 -- SET TIMEZONE = 'EUROPE/BERLIN';
 SET TIME ZONE 'UTC';
 
@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS players;
 
 CREATE TABLE IF NOT EXISTS players
 (
-    id           SMALLSERIAL  NOT NULL PRIMARY KEY,
+    id           BIGSERIAL  NOT NULL PRIMARY KEY,
     nickname     VARCHAR(100) NOT NULL,
     image_url    VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
     player_points INTEGER DEFAULT 100,

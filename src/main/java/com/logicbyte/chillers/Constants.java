@@ -12,4 +12,7 @@ public interface Constants {
     int WIN_POINTS = 50;
     int DRAW_POINTS = 20;
     int MVP_POINTS = 25;
+
+    String STANDARD_RUNTIME_EXCEPTION_MSG =
+            "An error occurred. Please try later";
 }

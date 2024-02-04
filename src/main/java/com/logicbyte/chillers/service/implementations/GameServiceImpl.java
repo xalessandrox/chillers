@@ -22,10 +22,10 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
+import static com.logicbyte.chillers.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
 import static com.logicbyte.chillers.Utils.setUtcToSystemDefaultZone;
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
-import static com.logicbyte.chillers.enums.Outcome.DRAW;
 import static com.logicbyte.chillers.enums.Outcome.SCRAP;
 import static com.logicbyte.chillers.query.GameQuery.*;
 
@@ -53,33 +53,37 @@ public class GameServiceImpl implements GameService {
             setGameAndPlayers(game.getTeam1(), game.getTeam2(), game.getId());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            throw new RuntimeException("An error occurred. Please try again.");
+            throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
         }
         return game;
     }
 
     @Override
     public Game saveGame(Game game) {
-        game.setGameState(FINISHED);
-        // Update game
-        // TODO: solve mvp = 0 causing Exception
-        LocalDateTime finishedAtToPersist = LocalDateTime.now(Clock.system(ZoneId.of("UTC")));
-        jdbc.update(SAVE_GAME_QUERY, Map.of(
-                "gameId", game.getId(),
-                "gameState", FINISHED.ordinal(),
-                "outcome", game.getOutcome().ordinal(),
-                "mvp", game.getMvp() != null ? game.getMvp().getId() : 0,
-                "finishedAt", finishedAtToPersist)
-        );
-        game.setFinishedAt(setUtcToSystemDefaultZone(finishedAtToPersist));
-        Outcome outcome = game.getOutcome();
-        if (outcome != SCRAP) {
-            playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), outcome);
+        try {
+            game.setGameState(FINISHED);
+            // Update game
+            // TODO: solve mvp = 0 causing Exception
+            LocalDateTime finishedAtToPersist = LocalDateTime.now(Clock.system(ZoneId.of("UTC")));
+            jdbc.update(SAVE_GAME_QUERY, Map.of(
+                    "gameId", game.getId(),
+                    "gameState", FINISHED.ordinal(),
+                    "outcome", game.getOutcome().ordinal(),
+                    "mvp", game.getMvp() != null ? game.getMvp().getId() : 0,
+                    "finishedAt", finishedAtToPersist)
+            );
+            game.setFinishedAt(setUtcToSystemDefaultZone(finishedAtToPersist));
+            Outcome outcome = game.getOutcome();
+            if (outcome != SCRAP) {
+                playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), outcome);
 
-            // Here are assigned the points to the MVP \\
-            playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
-            game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
-
+                // Here are assigned the points to the MVP \\
+                playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
+                game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
         }
         return game;
     }
@@ -104,7 +108,7 @@ public class GameServiceImpl implements GameService {
             return game;
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            throw new RuntimeException("An error occurred. Please try again.");
+            throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
         }
     }
 
@@ -128,7 +132,7 @@ public class GameServiceImpl implements GameService {
 
         } catch (Exception exception) {
             log.error(exception.getMessage());
-            throw new RuntimeException("An error occurred. Please try again.");
+            throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
         }
 
     }
@@ -149,9 +153,16 @@ public class GameServiceImpl implements GameService {
     }
 
     private Outcome getOutcomeByGameId(Integer id) {
-        Integer outcomeAsKey = jdbc.queryForObject(
-                "SELECT outcome FROM games WHERE id = :gameId",
-                Map.of("gameId", id), Integer.class);
+        Integer outcomeAsKey = null;
+        try {
+            outcomeAsKey = jdbc.queryForObject(
+                    "SELECT outcome FROM games WHERE id = :gameId",
+                    Map.of("gameId", id), Integer.class);
+        } catch (Exception ex) {
+            log.error("Could not get outcome by game id {}{}", System.lineSeparator(), ex.getMessage());
+            throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
+        }
+
         return Utils.getOutcomeByOrdinal(outcomeAsKey);
     }
 
