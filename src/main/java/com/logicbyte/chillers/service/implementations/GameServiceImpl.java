@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
+import static com.logicbyte.chillers.Utils.setUtcToSystemDefaultZone;
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
 import static com.logicbyte.chillers.enums.Outcome.DRAW;
@@ -46,7 +48,6 @@ public class GameServiceImpl implements GameService {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource parameterSource = getSqlParameterSourceForGame(game);
             jdbc.update(INSERT_GAME_QUERY, parameterSource, keyHolder);
-//            game.setId(Integer.valueOf(String.valueOf(keyHolder.getKeys().get("id"))));
             game.setId(Integer.parseInt(keyHolder.getKeys().get("id").toString()));
             game.setGameState(STARTED);
             setGameAndPlayers(game.getTeam1(), game.getTeam2(), game.getId());
@@ -62,22 +63,23 @@ public class GameServiceImpl implements GameService {
         game.setGameState(FINISHED);
         // Update game
         // TODO: solve mvp = 0 causing Exception
-        game.setFinishedAt(LocalDateTime.now(Clock.systemDefaultZone()));
+        LocalDateTime finishedAtToPersist = LocalDateTime.now(Clock.system(ZoneId.of("UTC")));
         jdbc.update(SAVE_GAME_QUERY, Map.of(
                 "gameId", game.getId(),
                 "gameState", FINISHED.ordinal(),
                 "outcome", game.getOutcome().ordinal(),
                 "mvp", game.getMvp() != null ? game.getMvp().getId() : 0,
-                "finishedAt", LocalDateTime.now(Clock.systemDefaultZone()))
+                "finishedAt", finishedAtToPersist)
         );
+        game.setFinishedAt(setUtcToSystemDefaultZone(finishedAtToPersist));
         Outcome outcome = game.getOutcome();
         if (outcome != SCRAP) {
             playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), outcome);
-            if (game.getOutcome() != DRAW) {
-                // Here are assigned the points to the MVP \\
-                playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
-                game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
-            }
+
+            // Here are assigned the points to the MVP \\
+            playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
+            game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
+
         }
         return game;
     }
