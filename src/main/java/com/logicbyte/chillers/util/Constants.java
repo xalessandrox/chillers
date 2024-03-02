@@ -1,4 +1,4 @@
-package com.logicbyte.chillers;
+package com.logicbyte.chillers.util;
 
 /**
  * @author Alessandro Formica
@@ -14,5 +14,5 @@ public interface Constants {
     int MVP_POINTS = 25;
 
     String STANDARD_RUNTIME_EXCEPTION_MSG =
-            "An error occurred. Please try later";
+            "An error occurred";
 }

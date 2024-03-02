@@ -1,6 +1,6 @@
 package com.logicbyte.chillers.service.implementations;
 
-import com.logicbyte.chillers.Utils;
+import com.logicbyte.chillers.util.Utils;
 import com.logicbyte.chillers.enums.Outcome;
 import com.logicbyte.chillers.model.Game;
 import com.logicbyte.chillers.model.Player;
@@ -22,8 +22,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
-import static com.logicbyte.chillers.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
-import static com.logicbyte.chillers.Utils.setUtcToSystemDefaultZone;
+import static com.logicbyte.chillers.util.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
+import static com.logicbyte.chillers.util.Utils.setUtcToSystemDefaultZone;
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
 import static com.logicbyte.chillers.enums.Outcome.SCRAP;
@@ -45,11 +45,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public Game createGame(Game game) {
         try {
+            game.setNumberOfPlayers((byte) (game.getTeam1().size()));
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource parameterSource = getSqlParameterSourceForGame(game);
             jdbc.update(INSERT_GAME_QUERY, parameterSource, keyHolder);
             game.setId(Integer.parseInt(keyHolder.getKeys().get("id").toString()));
-            game.setGameState(STARTED);
             setGameAndPlayers(game.getTeam1(), game.getTeam2(), game.getId());
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -60,6 +60,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game saveGame(Game game) {
+        log.info("Saving game {}", game);
         try {
             game.setGameState(FINISHED);
             // Update game
@@ -90,7 +91,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<Game> getGames() {
-        return jdbc.query(SELECT_ALL_GAMES, new GameRowMapper());
+        List<Game> games = jdbc.query(SELECT_ALL_GAMES, new GameRowMapper());
+        games.forEach(this::setTeams);
+        return games;
     }
 
     @Override
@@ -105,11 +108,17 @@ public class GameServiceImpl implements GameService {
                 if (game.getOutcome() != SCRAP)
                     game.setMvp(playerService.getMvpPlayerByGameId(id));
             }
+            setTeams(game);
             return game;
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw new RuntimeException(STANDARD_RUNTIME_EXCEPTION_MSG);
         }
+    }
+
+    private void setTeams(Game game) {
+        game.setTeam1(playerService.getTeam1PlayersOfTheGame(game.getId()));
+        game.setTeam2(playerService.getTeam2PlayersOfTheGame(game.getId()));
     }
 
     private void setGameAndPlayers(List<Player> team1, List<Player> team2, Integer gameId) {
@@ -147,6 +156,7 @@ public class GameServiceImpl implements GameService {
     private SqlParameterSource getSqlParameterSourceForGame(Game game) {
 
         return new MapSqlParameterSource()
+                .addValue("numberOfPlayers", game.getNumberOfPlayers())
                 .addValue("gameFormat", game.getGameFormat().ordinal())
                 .addValue("gameState", STARTED.ordinal());
 

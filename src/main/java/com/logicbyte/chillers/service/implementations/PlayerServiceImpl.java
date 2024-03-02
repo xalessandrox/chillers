@@ -1,6 +1,5 @@
 package com.logicbyte.chillers.service.implementations;
 
-import com.logicbyte.chillers.Utils;
 import com.logicbyte.chillers.enums.Outcome;
 import com.logicbyte.chillers.model.Player;
 import com.logicbyte.chillers.rowmapper.PlayerRowMapper;
@@ -12,9 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.logicbyte.chillers.enums.Outcome.DRAW;
 import static com.logicbyte.chillers.query.PlayerQuery.*;
@@ -32,20 +29,19 @@ import static com.logicbyte.chillers.query.PlayerQuery.*;
 public class PlayerServiceImpl implements PlayerService {
     private final NamedParameterJdbcTemplate jdbc;
 
-
     @Override
     public List<Player> getAll() {
         return jdbc.query(SELECT_ALL_PLAYERS_QUERY, new PlayerRowMapper());
     }
 
     @Override
-    public List<Map<String, List<Player>>> getPlayersOfTheGame(Integer gameId) {
-        List<Player> team1 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '1'), new PlayerRowMapper());
-        List<Player> team2 = jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '2'), new PlayerRowMapper());
+    public List<Player> getTeam1PlayersOfTheGame(Integer gameId) {
+        return jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '1'), new PlayerRowMapper());
+    }
 
-        Map<String, List<Player>> team1asMap = Map.of("team1", team1);
-        Map<String, List<Player>> team2asMap = Map.of("team2", team2);
-        return Arrays.asList(team1asMap, team2asMap);
+    @Override
+    public List<Player> getTeam2PlayersOfTheGame(Integer gameId) {
+        return  jdbc.query(SELECT_PLAYERS_BY_GAME_ID_QUERY, getSqlParameterSource(gameId, '2'), new PlayerRowMapper());
     }
 
     @Override

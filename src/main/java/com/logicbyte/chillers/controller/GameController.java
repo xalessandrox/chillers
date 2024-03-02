@@ -6,7 +6,6 @@ import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static com.logicbyte.chillers.Utils.getUri;
+import static com.logicbyte.chillers.util.Utils.getUri;
 
 /**
  * @author Alessandro Formica
@@ -58,8 +57,8 @@ public class GameController {
                                 .timeStamp(LocalDateTime.now().toString())
                                 .data(Map.of(
                                         "game", gameService.saveGame(game),
-                                        "players", playerService.getPlayersOfTheGame(game.getId())
-                                ))
+                                        "team1", playerService.getTeam1PlayersOfTheGame(game.getId()),
+                                        "team2", playerService.getTeam2PlayersOfTheGame(game.getId())))
                                 .message("Game successfully saved")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
@@ -73,7 +72,9 @@ public class GameController {
                 .body(
                         HttpResponse.builder()
                                 .timeStamp(LocalDateTime.now().toString())
-                                .data(Map.of("games", gameService.getGames()))
+                                .data(Map.of(
+                                        "games", gameService.getGames())
+                                )
                                 .message("Retrieved Games")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
@@ -89,8 +90,8 @@ public class GameController {
                                 .timeStamp(LocalDateTime.now().toString())
                                 .data(Map.of(
                                         "game", gameService.getGame(id),
-                                        "players", playerService.getPlayersOfTheGame(id))
-                                )
+                                        "team1", playerService.getTeam1PlayersOfTheGame(id),
+                                        "team2", playerService.getTeam2PlayersOfTheGame(id)))
                                 .message("Retrieved Games")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())

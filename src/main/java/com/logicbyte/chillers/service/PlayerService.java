@@ -16,7 +16,8 @@ import java.util.Map;
 public interface PlayerService {
 
     List<Player> getAll();
-    List<Map<String, List<Player>>> getPlayersOfTheGame(Integer gameId);
+    List<Player> getTeam1PlayersOfTheGame(Integer gameId);
+    List<Player> getTeam2PlayersOfTheGame(Integer gameId);
     Player findPlayerById(Integer id);
     List<Integer> findPlayersByGameIdAndTeamFromGamesPlayers(int gameId, char winnerTeam);
     Player getMvpPlayerByGameId(Integer id);

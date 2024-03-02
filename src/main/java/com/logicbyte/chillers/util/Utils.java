@@ -1,4 +1,4 @@
-package com.logicbyte.chillers;
+package com.logicbyte.chillers.util;
 
 import com.logicbyte.chillers.enums.Outcome;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;

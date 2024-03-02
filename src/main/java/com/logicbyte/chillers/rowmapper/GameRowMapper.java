@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
-import static com.logicbyte.chillers.Utils.setUtcToSystemDefaultZone;
+import static com.logicbyte.chillers.util.Utils.setUtcToSystemDefaultZone;
 
 /**
  * @author Alessandro Formica
@@ -24,10 +24,11 @@ public class GameRowMapper implements RowMapper<Game> {
         LocalDateTime synchronizedFinishedAt = rs.getTimestamp("finished_at") == null ? null : setUtcToSystemDefaultZone(rs.getTimestamp("finished_at").toLocalDateTime());
         return Game.builder()
                 .id(rs.getInt("id"))
-                .gameFormat(GameFormat.values()[(rs.getInt("gameFormat"))])
-                .gameState(GameState.values()[(rs.getInt("gameState"))])
+                .gameFormat(GameFormat.values()[(rs.getInt("game_format"))])
+                .gameState(GameState.values()[(rs.getInt("game_state"))])
                 .createdAt(synchronizedCreatedAt)
                 .finishedAt(synchronizedFinishedAt)
+                .numberOfPlayers((byte) rs.getByte("number_of_players"))
                 .build();
     }
 }

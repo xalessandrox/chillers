@@ -9,7 +9,7 @@ package com.logicbyte.chillers.query;
 public interface GameQuery {
 
     String INSERT_GAME_QUERY =
-            "INSERT INTO games (gameFormat, gameState) VALUES (:gameFormat, :gameState)";
+            "INSERT INTO games (game_format, game_state, number_of_players) VALUES (:gameFormat, :gameState, :numberOfPlayers)";
     String INSERT_INTO_GAMES_PLAYERS =
             "INSERT INTO games_players (game_id, player_id, team) VALUES (:gameId, :playerId, :team);";
     String SELECT_ALL_GAMES =
@@ -19,7 +19,7 @@ public interface GameQuery {
     String SAVE_GAME_QUERY = """
             UPDATE games
             SET
-            gameState = :gameState,
+            game_state = :gameState,
             outcome = :outcome,
             mvp = CASE WHEN :mvp <> 0 THEN :mvp END,
             finished_at = :finishedAt

@@ -18,6 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Team {
 
-    List<Player> players;
+    List<Player> playersTeam1;
+    List<Player> playersTeam2;
+
+    public Team(int numberOfPlayers) {
+
+    }
+
 
 }

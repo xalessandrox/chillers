@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication
-public class ChillersApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(ChillersApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
     private final List<String> ALLOWED_ORIGINS = Arrays.asList("http://localhost:4200", "http://localhost:3000", "http://192.168.0.19", "http://localhost:80");
@@ -24,6 +24,7 @@ public class ChillersApplication {
             "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "File-Name", "Access-Control-Expose-Headers", "Content-Length");
 
     private final List<String> ALLOWED_METHODS = Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();

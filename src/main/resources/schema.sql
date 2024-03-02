@@ -13,23 +13,23 @@ DROP TABLE IF EXISTS players;
 
 CREATE TABLE IF NOT EXISTS players
 (
-    id           BIGSERIAL  NOT NULL PRIMARY KEY,
-    nickname     VARCHAR(100) NOT NULL,
-    image_url    VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-    player_points INTEGER DEFAULT 100,
+    id            BIGSERIAL    NOT NULL PRIMARY KEY,
+    nickname      VARCHAR(100) NOT NULL,
+    image_url     VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+    player_points INTEGER      DEFAULT 100,
     CONSTRAINT uq_players_nickname UNIQUE (nickname)
 );
 
 CREATE TABLE IF NOT EXISTS games
 (
-    id          BIGSERIAL PRIMARY KEY,
---     type       SMALLINT NOT NULL CHECK (type > -1),
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    finished_at TIMESTAMP DEFAULT NULL,
-    gameFormat  CHAR(1), -- 2v2, 3v3 etc
-    gameState   CHAR(1), -- started / finished
-    outcome     CHAR(1), -- TEAM1_WINS, TEAM2_WINS, DRAW, SCRAP
-    mvp         INTEGER DEFAULT NULL,
+    id                BIGSERIAL PRIMARY KEY,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    finished_at       TIMESTAMP DEFAULT NULL,
+    game_format       CHAR(1), -- 2v2, 3v3 etc
+    game_state        CHAR(1) DEFAULT 0, -- started / finished
+    outcome           CHAR(1), -- TEAM1_WINS, TEAM2_WINS, DRAW, SCRAP
+    mvp               INTEGER   DEFAULT NULL,
+    number_of_players CHAR(1),
     FOREIGN KEY (mvp) REFERENCES players (id)
 );
 
