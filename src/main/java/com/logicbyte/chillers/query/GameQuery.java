@@ -14,6 +14,8 @@ public interface GameQuery {
             "INSERT INTO games_players (game_id, player_id, team) VALUES (:gameId, :playerId, :team);";
     String SELECT_ALL_GAMES =
             "SELECT * FROM games;";
+    String SELECT_ALL_ONGOING_GAMES =
+            "SELECT * FROM games WHERE game_state = '0'";
     String SELECT_GAME_BY_ID_QUERY =
             "SELECT * FROM games WHERE id = :gameId";
     String SAVE_GAME_QUERY = """

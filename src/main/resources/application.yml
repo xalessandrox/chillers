@@ -16,3 +16,5 @@ spring:
     hibernate:
       ddl-auto: ${DDL_AUTO_MODE}
     generate-ddl: false
+    open-in-view: false
+

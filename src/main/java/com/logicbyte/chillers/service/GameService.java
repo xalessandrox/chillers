@@ -16,5 +16,6 @@ public interface GameService {
     Game saveGame(Game game);
     Game getGame(Integer id);
     List<Game> getGames();
+    List<Game> getOngoingGames();
 
 }

@@ -7,7 +7,7 @@ package com.logicbyte.chillers.enums;
  */
 
 /**
- * Indicates the outcome for a team. Each game has players connected to team and to outcome.
+ * Indicates the outcome for a team.
  */
 
 public enum Outcome {

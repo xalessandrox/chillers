@@ -6,6 +6,7 @@ import com.logicbyte.chillers.enums.GameState;
 import com.logicbyte.chillers.enums.Outcome;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Immutable
 public class Game {
 
     Integer id;

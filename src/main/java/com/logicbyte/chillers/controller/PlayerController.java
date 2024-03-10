@@ -1,6 +1,7 @@
 package com.logicbyte.chillers.controller;
 
 import com.logicbyte.chillers.model.HttpResponse;
+import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class PlayerController {
 
     private final PlayerService playerService;
+    private final GameService gameService;
 
     @GetMapping("/all")
     public ResponseEntity<HttpResponse> getPlayers() {
@@ -34,7 +36,9 @@ public class PlayerController {
                 .body(
                         HttpResponse.builder()
                                 .timeStamp(LocalDateTime.now().toString())
-                                .data(Map.of("players", playerService.getAll()))
+                                .data(Map.of(
+                                        "players", playerService.getAll(),
+                                        "ongoingGames", gameService.getOngoingGames()))
                                 .message("Retrieved Players")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())

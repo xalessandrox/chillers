@@ -4,6 +4,8 @@ VALUES ('hk'),
        ('saif'),
        ('sandro'),
        ('beer'),
-       ('vbd');
+       ('vbd'),
+       ('kara'),
+       ('yam');
 -- INSERT INTO games (format, state)
 -- VALUES ('0', '3');

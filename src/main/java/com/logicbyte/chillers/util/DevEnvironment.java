@@ -51,7 +51,7 @@ public class DevEnvironment {
             log.info("Created game:{}{}", System.lineSeparator(), game);
 
             game.setOutcome(Outcome.DRAW);
-            game.setMvp(playerService.findPlayerById(1));
+            game.setMvp(playerService.findPlayerById(2));
             gameService.saveGame(game);
             log.info("Saved finished game:{}{}", System.lineSeparator(), game);
 
@@ -69,7 +69,7 @@ public class DevEnvironment {
             gameService.createGame(game1);
             log.info("Created game:{}{}", System.lineSeparator(), game1);
             game1.setOutcome(Outcome.TEAM1_WINS);
-            game1.setMvp(playerService.findPlayerById(1));
+            game1.setMvp(playerService.findPlayerById(3));
             gameService.saveGame(game1);
             log.info("Saved finished game:{}{}", System.lineSeparator(), game1);
 
@@ -86,11 +86,6 @@ public class DevEnvironment {
             ));
             gameService.createGame(game2);
             log.info("Created game:{}{}", System.lineSeparator(), game1);
-//            game1.setOutcome(Outcome.TEAM1_WINS);
-//            game1.setMvp(playerService.findPlayerById(1));
-//            gameService.saveGame(game1);
-//            log.info("Saved finished game:{}{}", System.lineSeparator(), game1);
-
 
         };
     }

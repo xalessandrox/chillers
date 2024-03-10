@@ -3,6 +3,8 @@ package com.logicbyte.chillers.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Objects;
+
 /**
  * @author Alessandro Formica
  * @version 1.0
@@ -21,7 +23,18 @@ public class Player {
     private String nickname;
     private String image_url;
     private int playerPoints;
-//    @Transient
-//    private char team;
+
+    @Override
+    public boolean equals(Object object) {
+        if(object == this) return true;
+        if(!(object instanceof Player other)) return false;
+        return
+                Objects.equals(other.getNickname(), this.getNickname());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getNickname());
+    }
 
 }

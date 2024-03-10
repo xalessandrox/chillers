@@ -77,10 +77,11 @@ public class GameServiceImpl implements GameService {
             Outcome outcome = game.getOutcome();
             if (outcome != SCRAP) {
                 playerService.updatePlayersPointsByGameIdAndOutcome(game.getId(), outcome);
-
-                // Here are assigned the points to the MVP \\
-                playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
-                game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
+                if(game.getMvp() != null) {
+                    // Here are assigned the points to the MVP \\
+                    playerService.updatePlayerPointsByPlayerId(game.getMvp().getId(), 35);
+                    game.setMvp(playerService.findPlayerById(game.getMvp().getId()));
+                }
             }
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -92,6 +93,13 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<Game> getGames() {
         List<Game> games = jdbc.query(SELECT_ALL_GAMES, new GameRowMapper());
+        games.forEach(this::setTeams);
+        return games;
+    }
+
+    @Override
+    public List<Game> getOngoingGames() {
+        List<Game> games = jdbc.query(SELECT_ALL_ONGOING_GAMES, new GameRowMapper());
         games.forEach(this::setTeams);
         return games;
     }

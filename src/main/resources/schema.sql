@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS players
 (
     id            BIGSERIAL    NOT NULL PRIMARY KEY,
     nickname      VARCHAR(100) NOT NULL,
-    image_url     VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-    player_points INTEGER      DEFAULT 100,
-    CONSTRAINT uq_players_nickname UNIQUE (nickname)
+    image_url     VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/128/149/149071.png',
+    player_points INTEGER      DEFAULT 100
+--     CONSTRAINT uq_players_nickname UNIQUE (nickname)
 );
 
 CREATE TABLE IF NOT EXISTS games
