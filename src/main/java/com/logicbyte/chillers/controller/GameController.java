@@ -36,6 +36,8 @@ public class GameController {
 
     @PostMapping("/new")
     public ResponseEntity<HttpResponse> createGame(@RequestBody @Valid Game game) {
+        System.out.println("\n*****\nGAME CREATED\n******\n");
+        System.out.println(game);
         return ResponseEntity
                 .created(getUri())
                 .body(

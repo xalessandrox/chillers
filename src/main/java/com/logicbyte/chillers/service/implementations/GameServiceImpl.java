@@ -1,12 +1,12 @@
 package com.logicbyte.chillers.service.implementations;
 
-import com.logicbyte.chillers.util.Utils;
 import com.logicbyte.chillers.enums.Outcome;
 import com.logicbyte.chillers.model.Game;
 import com.logicbyte.chillers.model.Player;
 import com.logicbyte.chillers.rowmapper.GameRowMapper;
 import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
+import com.logicbyte.chillers.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,15 +19,16 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
-import static com.logicbyte.chillers.util.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
-import static com.logicbyte.chillers.util.Utils.setUtcToSystemDefaultZone;
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
 import static com.logicbyte.chillers.enums.GameState.STARTED;
 import static com.logicbyte.chillers.enums.Outcome.SCRAP;
 import static com.logicbyte.chillers.query.GameQuery.*;
+import static com.logicbyte.chillers.util.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
+import static com.logicbyte.chillers.util.Utils.setUtcToSystemDefaultZone;
 
 /**
  * @author Alessandro Formica
@@ -116,7 +117,7 @@ public class GameServiceImpl implements GameService {
                 if (game.getOutcome() != SCRAP)
                     game.setMvp(playerService.getMvpPlayerByGameId(id));
             }
-            setTeams(game);
+//            setTeams(game);
             return game;
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -164,6 +165,7 @@ public class GameServiceImpl implements GameService {
     private SqlParameterSource getSqlParameterSourceForGame(Game game) {
 
         return new MapSqlParameterSource()
+                .addValue("createdAt", LocalDateTime.now(ZoneOffset.UTC))
                 .addValue("numberOfPlayers", game.getNumberOfPlayers())
                 .addValue("gameFormat", game.getGameFormat().ordinal())
                 .addValue("gameState", STARTED.ordinal());

@@ -6,7 +6,6 @@ import com.logicbyte.chillers.enums.GameState;
 import com.logicbyte.chillers.enums.Outcome;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-@Immutable
+//@Immutable
 public class Game {
 
     Integer id;
@@ -39,6 +38,7 @@ public class Game {
     private byte numberOfPlayers;
     private Player mvp;
     private int teamWinner;
+
 
     public Game(GameFormat gameFormat, byte numberOfPlayers) {
         this.team1 = new ArrayList<>(numberOfPlayers);

@@ -50,7 +50,7 @@ public class DevEnvironment {
             gameService.createGame(game);
             log.info("Created game:{}{}", System.lineSeparator(), game);
 
-            game.setOutcome(Outcome.DRAW);
+            game.setOutcome(Outcome.TEAM1_WINS);
             game.setMvp(playerService.findPlayerById(2));
             gameService.saveGame(game);
             log.info("Saved finished game:{}{}", System.lineSeparator(), game);

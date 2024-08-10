@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS players
 CREATE TABLE IF NOT EXISTS games
 (
     id                BIGSERIAL PRIMARY KEY,
-    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at        TIMESTAMP DEFAULT NULL,
     finished_at       TIMESTAMP DEFAULT NULL,
     game_format       CHAR(1), -- 2v2, 3v3 etc
     game_state        CHAR(1) DEFAULT 0, -- started / finished
