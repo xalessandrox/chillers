@@ -33,5 +33,6 @@ public interface PlayerQuery {
             (SELECT player_points FROM players WHERE id = :playerId) + :points
             WHERE id = :playerId
             """;
-
+    String INSERT_PLAYER_QUERY = " INSERT INTO players (nickname, player_points) VALUES (:nickname, :points)";
+    String SELECT_PLAYER_BY_NICKNAME = " SELECT * FROM players WHERE nickname = :nickname ";
 }

@@ -7,14 +7,24 @@ spring:
     init:
       mode: ${SQL_INIT_MODE}
       continue-on-error: false
-#  jpa:
-#    hibernate:
-#      dialect: org.hibernate.dialect.POSTGRESQLDialect
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   profiles:
-    active: dev
-  jpa:
-    hibernate:
-      ddl-auto: ${DDL_AUTO_MODE}
-    generate-ddl: false
-    open-in-view: false
+    active: ${ACTIVE_PROFILE}
 
+  # actuator
+management:
+  server:
+    port: 8090
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: always
+    configprops:
+      show-values: always
+    health:
+      show-details: always

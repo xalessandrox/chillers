@@ -1,15 +1,16 @@
 package com.logicbyte.chillers.controller;
 
 import com.logicbyte.chillers.model.HttpResponse;
+import com.logicbyte.chillers.model.PlayerSave;
 import com.logicbyte.chillers.service.GameService;
 import com.logicbyte.chillers.service.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.logicbyte.chillers.util.Utils.getUri;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -42,6 +43,20 @@ public class PlayerController {
                                 .message("Retrieved Players")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
+                                .build());
+    }
+
+    @PostMapping
+    public ResponseEntity<HttpResponse> createPlayer(@RequestBody PlayerSave playerSave) {
+        playerService.createPlayer(playerSave);
+        return ResponseEntity
+                .created(getUri())
+                .body(
+                        HttpResponse.builder()
+                                .timeStamp(LocalDateTime.now().toString())
+                                .message("Player created")
+                                .httpStatus(HttpStatus.CREATED)
+                                .statusCode(HttpStatus.CREATED.value())
                                 .build());
     }
 

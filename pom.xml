@@ -33,7 +33,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -50,10 +53,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
@@ -61,6 +60,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -78,13 +83,22 @@
     </build>
 
         <profiles>
+            <profile>
+                <id>prod</id>
+                <activation>
+                    <activeByDefault>false</activeByDefault>
+                </activation>
+                <properties>
+                    <spring.profiles.active>prod</spring.profiles.active>
+                </properties>
+            </profile>
 <!--            <profile>-->
-<!--                <id>prod</id>-->
+<!--                <id>test</id>-->
 <!--                <activation>-->
 <!--                    <activeByDefault>false</activeByDefault>-->
 <!--                </activation>-->
 <!--                <properties>-->
-<!--                    <spring.profiles.active>prod</spring.profiles.active>-->
+<!--                    <spring.profiles.active>test</spring.profiles.active>-->
 <!--                </properties>-->
 <!--            </profile>-->
             <profile>

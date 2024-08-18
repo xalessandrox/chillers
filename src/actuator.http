@@ -1,5 +1,5 @@
 ### health
-GET localhost:8090/brad/health
+GET localhost:8090/health
 
 # M E T R I C S #
 ### metrics

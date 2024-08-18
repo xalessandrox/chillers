@@ -22,7 +22,7 @@ public class Player {
     private Integer id;
     private String nickname;
     private String image_url;
-    private int playerPoints;
+    private int points;
 
     @Override
     public boolean equals(Object object) {

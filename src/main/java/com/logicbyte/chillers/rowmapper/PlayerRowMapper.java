@@ -21,7 +21,7 @@ public class PlayerRowMapper implements RowMapper<Player> {
                .id(rs.getInt("id"))
                .nickname(rs.getString("nickname"))
                .image_url(rs.getString("image_url"))
-               .playerPoints(rs.getInt("player_points"))
+               .points(rs.getInt("player_points"))
                .build();
     }
 }

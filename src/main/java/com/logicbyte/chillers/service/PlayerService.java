@@ -2,9 +2,9 @@ package com.logicbyte.chillers.service;
 
 import com.logicbyte.chillers.enums.Outcome;
 import com.logicbyte.chillers.model.Player;
+import com.logicbyte.chillers.model.PlayerSave;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Alessandro Formica
@@ -23,5 +23,5 @@ public interface PlayerService {
     Player getMvpPlayerByGameId(Integer id);
     void updatePlayersPointsByGameIdAndOutcome(Integer id, Outcome outcome);
     void updatePlayerPointsByPlayerId(int playerId, int points);
-
+    void createPlayer(PlayerSave playerSave);
 }

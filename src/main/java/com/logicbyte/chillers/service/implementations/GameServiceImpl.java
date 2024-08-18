@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.logicbyte.chillers.enums.GameState.FINISHED;
-import static com.logicbyte.chillers.enums.GameState.STARTED;
 import static com.logicbyte.chillers.enums.Outcome.SCRAP;
 import static com.logicbyte.chillers.query.GameQuery.*;
 import static com.logicbyte.chillers.util.Constants.STANDARD_RUNTIME_EXCEPTION_MSG;
@@ -49,7 +48,7 @@ public class GameServiceImpl implements GameService {
             game.setNumberOfPlayers((byte) (game.getTeam1().size()));
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource parameterSource = getSqlParameterSourceForGame(game);
-            jdbc.update(INSERT_GAME_QUERY, parameterSource, keyHolder);
+            int res = jdbc.update(INSERT_GAME_QUERY, parameterSource, keyHolder);
             game.setId(Integer.parseInt(keyHolder.getKeys().get("id").toString()));
             setGameAndPlayers(game.getTeam1(), game.getTeam2(), game.getId());
         } catch (Exception ex) {
@@ -67,7 +66,7 @@ public class GameServiceImpl implements GameService {
             // Update game
             // TODO: solve mvp = 0 causing Exception
             LocalDateTime finishedAtToPersist = LocalDateTime.now(Clock.system(ZoneId.of("UTC")));
-            jdbc.update(SAVE_GAME_QUERY, Map.of(
+            jdbc.update(UPDATE_GAME_QUERY, Map.of(
                     "gameId", game.getId(),
                     "gameState", FINISHED.ordinal(),
                     "outcome", game.getOutcome().ordinal(),
@@ -167,8 +166,7 @@ public class GameServiceImpl implements GameService {
         return new MapSqlParameterSource()
                 .addValue("createdAt", LocalDateTime.now(ZoneOffset.UTC))
                 .addValue("numberOfPlayers", game.getNumberOfPlayers())
-                .addValue("gameFormat", game.getGameFormat().ordinal())
-                .addValue("gameState", STARTED.ordinal());
+                .addValue("gameFormat", game.getGameFormat().ordinal());
 
     }
 

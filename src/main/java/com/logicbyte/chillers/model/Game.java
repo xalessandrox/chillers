@@ -19,7 +19,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"team1", "team2"})
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -49,3 +49,11 @@ GET localhost:8080/games/all
 ### PLAYERS: get ALL
 GET localhost:8080/players/all
 
+### PLAYERS: create
+POST localhost:8080/players
+Content-Type: application/json
+
+{
+  "nickname": "Geronimo"
+}
+
