@@ -1,6 +1,7 @@
 package com.logicbyte.chillers.util;
 
 import com.logicbyte.chillers.enums.Outcome;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -15,7 +16,7 @@ import java.util.Arrays;
  * @since 05.12.2023
  */
 
-
+@Slf4j
 public class Utils {
 
     public static URI getUri() {
@@ -30,7 +31,7 @@ public class Utils {
 
     public static LocalDateTime setUtcToSystemDefaultZone(LocalDateTime dateTimeToSynchronize) {
         if (dateTimeToSynchronize == null) {
-            System.out.println("There's no time for us");
+            log.error("dateTimeToSynchronize is null");
             return null;
         }
         ZonedDateTime zdt = ZonedDateTime.of(dateTimeToSynchronize, ZoneId.of("UTC"));

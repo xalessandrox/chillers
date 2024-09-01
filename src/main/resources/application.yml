@@ -1,4 +1,7 @@
 spring:
+
+  banner:
+    location: classpath:/banner/banner.txt
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     password: ${DB_PASSWORD}
@@ -7,8 +10,8 @@ spring:
     init:
       mode: ${SQL_INIT_MODE}
       continue-on-error: false
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
+      schema-locations: classpath:/db/schema.sql
+      data-locations: classpath:/db/data.sql
   profiles:
     active: ${ACTIVE_PROFILE}
 
@@ -28,3 +31,6 @@ management:
       show-values: always
     health:
       show-details: always
+application:
+  title: @project.artifactId@
+  version: @project.version@

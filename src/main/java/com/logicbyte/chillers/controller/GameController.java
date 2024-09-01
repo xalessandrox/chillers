@@ -72,9 +72,7 @@ public class GameController {
                 .body(
                         HttpResponse.builder()
                                 .timeStamp(LocalDateTime.now().toString())
-                                .data(Map.of(
-                                        "games", gameService.getGames())
-                                )
+                                .data(Map.of("games", gameService.getGames()))
                                 .message("Retrieved Games")
                                 .httpStatus(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
