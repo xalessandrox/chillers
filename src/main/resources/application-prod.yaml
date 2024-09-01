@@ -1,0 +1,10 @@
+DB_USERNAME: chillers
+DB_PASSWORD: tra11gi0rni!@bB
+DB_HOST: 127.0.0.1
+DB_PORT: 5432
+DB_NAME: chillers
+SQL_INIT_MODE: always
+ACTIVE_PROFILE: prod
+
+server:
+  address: 0.0.0.0
